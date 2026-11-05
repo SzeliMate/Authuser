@@ -1,6 +1,6 @@
 ﻿namespace AuthApi.Models.DTOs
 {
-    public class NewUserDto
+    public class NewUserDTO
     {
         public string? Name { get; set; }
 
