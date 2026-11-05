@@ -138,3 +138,4 @@ C:\Users\szelim\Desktop\dolgozat.a\SneekerShop\AuthApi\obj\Debug\net10.0\refint\
 C:\Users\szelim\Desktop\dolgozat.a\SneekerShop\AuthApi\obj\Debug\net10.0\AuthApi.pdb
 C:\Users\szelim\Desktop\dolgozat.a\SneekerShop\AuthApi\obj\Debug\net10.0\AuthApi.genruntimeconfig.cache
 C:\Users\szelim\Desktop\dolgozat.a\SneekerShop\AuthApi\obj\Debug\net10.0\ref\AuthApi.dll
+C:\Users\szelim\Desktop\dolgozat.a\SneekerShop\AuthApi\obj\Debug\net10.0\AuthApi.sourcelink.json
