@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AuthApi.Models;
+using AuthApi.Models.DTOs;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using AuthApi.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace AuthApi.Controllers
 {
@@ -9,25 +11,105 @@ namespace AuthApi.Controllers
     public class UsersController : ControllerBase
     {
         private readonly AuthuserContext _context;
+
         public UsersController(AuthuserContext context)
         {
             _context = context;
         }
+
         [HttpPost("newUser")]
-        public async Task<IActionResult> NewUser([FromBody] NewUserDto newUserDto)
+        public async Task<IActionResult> NewUser([FromBody] NewUserDTO newUserDto)
         {
             var user = new User
-            { 
+            {
                 Id = Guid.NewGuid(),
                 Name = newUserDto.Name,
                 Email = newUserDto.Email,
                 Password = newUserDto.Password,
-                RegTime = DateTime.Now
             };
+
+            if (user is null)
             {
-            _context.Users.Add(user);
+                return StatusCode(400, new { message = "Hiba" });
+            }
+
+            await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(NewUser), new { id = user.Id }, user);
+
+            return StatusCode(201, new { message = "Felvéve", result = user });
+        }
+
+        [HttpGet("allUser")]
+        public async Task<IActionResult> AllUser()
+        {
+            var users = await _context.Users.ToListAsync();
+
+            if (users is null)
+            {
+                return StatusCode(400, new { message = "Hiba" });
+            }
+
+            return StatusCode(200, new { message = "Lekérdezve", result = users });
+        }
+
+        [HttpGet("byId")]
+        public async Task<IActionResult> UserById([FromQuery] Guid id)
+        {
+            var user = await _context.Users.SingleOrDefaultAsync(u => u.Id == id);
+
+            if (user is null)
+            {
+                return StatusCode(404, new { message = "Nincs találat" });
+            }
+            else if (user is not null)
+            {
+                return StatusCode(200, new { message = "Lekérdezve", result = user });
+            }
+
+            return StatusCode(400, new { message = "Hiba" });
+        }
+
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdateUser([FromQuery] Guid id, [FromBody] UpdateUserDTO updateUserDto)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+
+            if (user is null)
+            {
+                return StatusCode(404, new { message = "Nincs találat" });
+            }
+            else if (user is not null)
+            {
+                user.Name = updateUserDto.Name;
+                user.Email = updateUserDto.Email;
+                user.Password = updateUserDto.Password;
+
+                _context.Users.Update(user);
+                await _context.SaveChangesAsync();
+
+                return StatusCode(200, new { message = "Frissítve", result = user });
+            }
+
+            return StatusCode(400, new { message = "Hiba" });
+        }
+        [HttpDelete("delete")]
+        public async Task<IActionResult> DeleteUser([FromQuery] Guid id)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+
+            if (user is null)
+            {
+                return StatusCode(404, new { message = "Nincs találat" });
+            }
+            else if (user is not null)
+            {
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
+
+                return StatusCode(200, new { message = "Törölve", result = user });
+            }
+
+            return StatusCode(400, new { message = "Hiba" });
         }
     }
 }
