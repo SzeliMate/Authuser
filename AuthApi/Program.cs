@@ -1,4 +1,4 @@
-
+using Microsoft.EntityFrameworkCore;
 using AuthApi.Models;
 using Scalar.AspNetCore;
 
